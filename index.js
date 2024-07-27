@@ -77,6 +77,22 @@ app.put('/api/sobreNosotros', adminAutenticado, async (req, res) => {
     }
 });
 
+app.put('/api/sobreNosotros', adminAutenticado, async(req, res) => {
+    const { id } = req.body;
+    const { descripcion, imagenURL} = req.body;
+
+    try{
+        await pool.query(
+            'UPDATE sobreNosotros SET descripcion = $1, imagenURL = $2, WHERE id = $3',
+            [descripcion, imagenURL, id]
+        );
+        res.json({message: 'Página "Sobre Nosotro" actualizada exitosamente'});
+    }catch(error){
+        console.error(error);
+        res.status(500).json({ message: 'Error al intentar realizar los cambios solicitados'});
+    }
+});
+
 app.listen(port, () => {
     console.log(`Servidor corriendo en el puerto ${port}`);
 });
