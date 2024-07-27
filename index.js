@@ -24,10 +24,10 @@ const pool = new Pool({
 });
 
 const adminAutenticado = (req, res, next) => {
-    if(req.headers.authorization === 'Bearer admin_token') {
+    if (req.user && req.user.role === 'admin') {
         next();
     } else {
-        res.status(403).json({ message: 'No autorizado'});
+        res.status(403).json({ message: 'No autorizado' });
     }
 };
 
