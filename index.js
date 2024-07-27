@@ -78,7 +78,7 @@ app.put('/api/sobreNosotros', adminAutenticado, async (req, res) => {
 });
 
 app.put('/api/sobreNosotros/:id', adminAutenticado, async(req, res) => {
-    const { id } = req.body;
+    const { id } = req.params;
     const { descripcion, imagenURL} = req.body;
 
     try{
