@@ -2,6 +2,7 @@ const express = require('express');
 const { Pool } = require('pg');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const Joi = require('joi');
 
 dotenv.config();
 
@@ -23,33 +24,38 @@ const pool = new Pool({
 });
 
 const adminAutenticado = (req, res, next) => {
-    const isAdmin = true;
-    if (isAdmin) {
+    if(req.headers.authorization === 'Bearer admin_token') {
         next();
     } else {
-        res.status(403).json({ message: "No autorizado" });
+        res.status(403).json({ message: 'No autorizado'});
     }
 };
-
-app.put('/api/home', adminAutenticado, async (req, res) => {
-    const { descripcion, imagenURL } = req.body;
-    try {
-        await pool.query(
-            'UPDATE home SET descripcion = $1, imagenURL = $2 WHERE id = 1',
-            [descripcion, imagenURL]
-        );
-        res.json({ message: 'home actualizado exitosamente' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error al realizar los cambios solicitados' });
-    }
-});
 
 app.put('/api/home/:id', adminAutenticado, async(req, res) => {
     const { id } = req.params;
     const { descripcion, imagenURL } = req. body;
 
+    //Valirdar el id
+    const idSchema = Joi.number().integer().positive().required();
+    const { error: idError } = idSchema.validate(id);
+    if(idError) return res.status(400).json({ message: 'Id invalido'});
+
+    //Validar cuerpo de la solicitus
+    const schema = Joi.object({
+        descripcion: Joi.string().min(1).required(),
+        imagenURL: Joi.string().uri().required()
+    });
+
+    const { error } = schema.validate(req.body);
+    if(error) return res.status(400).json({ message: 'Datos invalidos', details: error.details});
+
     try{
+
+        const result = await pool.query('SELECT COUNT(*) FROM home WHERE id = $1', [id]);
+        if (parseInt(result.rows[0].count) === 0) {
+            return res.status(404).json({ message: 'Registro no encontrado'});
+        }
+
         await pool.query(
             'UPDATE home SET descripcion = $1, imagenURL = $2 WHERE id = $3',
             [descripcion, imagenURL, id]
@@ -63,25 +69,31 @@ app.put('/api/home/:id', adminAutenticado, async(req, res) => {
 });
 
 
-app.put('/api/sobreNosotros', adminAutenticado, async (req, res) => {
-    const { descripcion, imagenURL } = req.body;
-    try {
-        await pool.query(
-            'UPDATE sobreNosotros SET descripcion = $1, imagenURL = $2 WHERE id = 1',
-            [descripcion, imagenURL]
-        );
-        res.json({ message: 'Página "Sobre Nosotros" actualizada exitosamente' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error al realizar los cambios solicitados en la página Sobre Nosotros' });
-    }
-});
-
 app.put('/api/sobreNosotros/:id', adminAutenticado, async(req, res) => {
     const { id } = req.params;
     const { descripcion, imagenURL} = req.body;
 
+    //Valirdar el id
+    const idSchema = Joi.number().integer().positive().required();
+    const { error: idError } = idSchema.validate(id);
+    if(idError) return res.status(400).json({ message: 'Id invalido'});
+
+    //Validar cuerpo de la solicitus
+    const schema = Joi.object({
+        descripcion: Joi.string().min(1).required(),
+        imagenURL: Joi.string().uri().required()
+    });
+
+    const { error } = schema.validate(req.body);
+    if(error) return res.status(400).json({ message: 'Datos invalidos', details: error.details});
+
     try{
+
+        const result = await pool.query('SELECT COUNT(*) FROM sobreNosotros WHERE id = $1', [id]);
+        if (parseInt(result.rows[0].count) === 0) {
+            return res.status(404).json({ message: 'Registro no encontrado'});
+        }
+
         await pool.query(
             'UPDATE sobreNosotros SET descripcion = $1, imagenURL = $2 WHERE id = $3',
             [descripcion, imagenURL, id]
