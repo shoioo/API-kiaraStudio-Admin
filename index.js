@@ -83,7 +83,7 @@ app.put('/api/sobreNosotros/:id', adminAutenticado, async(req, res) => {
 
     try{
         await pool.query(
-            'UPDATE sobreNosotros SET descripcion = $1, imagenURL = $2, WHERE id = $3',
+            'UPDATE sobreNosotros SET descripcion = $1, imagenURL = $2 WHERE id = $3',
             [descripcion, imagenURL, id]
         );
         res.json({message: 'Página "Sobre Nosotro" actualizada exitosamente'});
