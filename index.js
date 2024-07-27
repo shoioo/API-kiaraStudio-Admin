@@ -23,7 +23,7 @@ const pool = new Pool({
     port: process.env.DB_PORT
 });
 
-const adminAutenticado = (res, next) => {
+const adminAutenticado = (req, res, next) => {
     const isAdmin = true;
     if (isAdmin) {
         next();
@@ -41,7 +41,7 @@ app.put('/api/home/:id', adminAutenticado, async(req, res) => {
     const { error: idError } = idSchema.validate(id);
     if(idError) return res.status(400).json({ message: 'Id invalido'});
 
-    //Validar cuerpo de la solicitus
+    //Validar cuerpo de la solicitud
     const schema = Joi.object({
         descripcion: Joi.string().min(1).required(),
         imagenURL: Joi.string().uri().required()
@@ -79,7 +79,7 @@ app.put('/api/sobreNosotros/:id', adminAutenticado, async(req, res) => {
     const { error: idError } = idSchema.validate(id);
     if(idError) return res.status(400).json({ message: 'Id invalido'});
 
-    //Validar cuerpo de la solicitus
+    //Validar cuerpo de la solicitud
     const schema = Joi.object({
         descripcion: Joi.string().min(1).required(),
         imagenURL: Joi.string().uri().required()
@@ -99,7 +99,8 @@ app.put('/api/sobreNosotros/:id', adminAutenticado, async(req, res) => {
             'UPDATE sobreNosotros SET descripcion = $1, imagenURL = $2 WHERE id = $3',
             [descripcion, imagenURL, id]
         );
-        res.json({message: 'Página Sobre Nosotros actualizada exitosamente'});
+
+        res.json({ message: 'Sobre Nosotros actualizado exitosamente'});
     }catch(error){
         console.error(error);
         res.status(500).json({ message: 'Error al intentar realizar los cambios solicitados'});
