@@ -23,8 +23,8 @@ const pool = new Pool({
     port: process.env.DB_PORT
 });
 
-const adminAutenticado = (req, res, next) => {
-    const isAdmin = true; // Placeholder para la autenticación
+const adminAutenticado = (res, next) => {
+    const isAdmin = true;
     if (isAdmin) {
         next();
     } else {
