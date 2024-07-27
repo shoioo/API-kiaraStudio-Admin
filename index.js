@@ -86,7 +86,7 @@ app.put('/api/sobreNosotros/:id', adminAutenticado, async(req, res) => {
             'UPDATE sobreNosotros SET descripcion = $1, imagenURL = $2 WHERE id = $3',
             [descripcion, imagenURL, id]
         );
-        res.json({message: 'Página "Sobre Nosotro" actualizada exitosamente'});
+        res.json({message: 'Página Sobre Nosotros actualizada exitosamente'});
     }catch(error){
         console.error(error);
         res.status(500).json({ message: 'Error al intentar realizar los cambios solicitados'});
