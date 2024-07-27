@@ -45,6 +45,23 @@ app.put('/api/home', adminAutenticado, async (req, res) => {
     }
 });
 
+app.put('/api/home/:id', adminAutenticado, async(req, res) => {
+    const { id } = req.params;
+    const { descripcion, imagenURL } = req. body;
+
+    try{
+        await pool.query(
+            'UPDATE home SET descripcion = $1, imagenURL = $2 WHERE id = $3',
+            [descripcion, imagenURL, id]
+        );
+
+        res.json({ message: 'Home actualizado exitosamente'});
+    }catch(error){
+        console.error(error);
+        res.status(500).json({ message: 'Error al realizar los cambios solicitados'});
+    }
+});
+
 
 app.put('/api/sobreNosotros', adminAutenticado, async (req, res) => {
     const { descripcion, imagenURL } = req.body;
